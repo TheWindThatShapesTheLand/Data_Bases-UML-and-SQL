@@ -1,0 +1,296 @@
+Create Table if not exists Human (
+Church_ID int Unique Primary Key Not Null,
+Name char(128) Not Null,
+Sex char(6) Not Null,
+Birth_Day data Not Null,
+Capital int,
+Additional_Info char(255)
+);
+
+Create Table if not exists Child (
+Church_ID int Unique not Null,
+Parent_Church_ID_1 int not Null,
+Parent_Church_ID__2 int not Null,
+Seniority int Not Null,
+Additional_Info char(255),
+Foreign Key (Church_ID) References Human(Church_ID)
+						On Delete Set Null
+						On Update Cascade,
+Foreign Key (Parent_Church_ID_1) References Human(Church_ID)
+						On Delete Set Null
+						On Update Cascade,
+Foreign  Key (Parent_Church_ID__2) References Human(Church_ID)
+						On Delete Set Null
+						On Update Cascade
+);
+
+Create Table If Not Exists House(
+Home_Address char(255) Primary Key Not Null,
+Additional_Info char(255)
+);
+
+Create Table if not exists Villager(
+Lords_Book_ID int Primary Key Unique Not Null,
+Church_ID int not Null,
+Home_Address char(255) Not Null,
+Additional_Info char(255),
+Foreign Key (Church_ID) References Human(Church_ID)
+						On Delete Set Null
+						On Update Cascade,
+Foreign Key (Home_Address) References House(Home_Address)
+						On Delete Set Null
+						On Update Cascade
+);
+
+Create Table If Not Exists Occupation(
+Profession char(255) Primary Key,
+Additional_Info char(255)
+);
+
+Create Table If Not Exists Villagers_Occupation(
+Villagers_ID_In_Lords_Books int,
+Villagers_Profession char,
+Experience int(10),
+Additional_Info char,
+Foreign Key (Villagers_ID_In_Lords_Books) References Villager(Lords_Book_ID)
+						On Delete Set Null
+						On Update Cascade,
+Foreign Key (Villagers_Profession) References Occupation(Profession)
+						On Delete Set Null
+						On Update Cascade
+);
+
+Create Table If Not Exists Working_Place(
+Address char Primary Key Unique  Not Null,
+Villagers_Profession char,
+List_Of_Goods int,
+Additional_Info char,
+Foreign Key (Villagers_Profession) References Occupation (Profession)
+						On Delete Set Null
+						On Update Cascade
+);
+
+Create Table If Not Exists Storage(
+Resources char Unique Primary Key,
+Working_Place_Address char Not Null,
+Amount_Of_Resources_In_Storage int,
+Additional_Info char,
+Foreign Key (Working_Place_Address) References Working_Place(Address)
+						On Delete Set Null
+						On Update Cascade
+
+);
+
+Create Table If Not Exists Goods(
+Goods_Type char Unique Primary Key,
+Working_Place_Address char Not Null,
+Resourses_Needed char,
+Amount_Of_Resources_To_Make int,
+Additional_Info char,
+Foreign Key (Working_Place_Address) References Working_Place(Address)
+						On Delete Set Null
+						On Update Cascade
+);
+
+Create Table If Not Exists Purchase(
+Customers_ID int Not Null,
+Goods_ID char Not Null,
+Amount int,
+Price int,
+Additional_Info char,
+Foreign Key (Customers_ID) References Human(Church_ID)
+						On Delete Set Null
+						On Update Cascade,
+Foreign Key (Goods_ID) References Goods(Goods_Type)
+						On Delete Set Null
+						On Update Cascade
+);
+
+Create Table If Not Exists Villagers_Lord(
+Lords_Position int Unique Primary Key Not Null,
+Church_ID int Unique not Null,
+Home_Address char,
+Additional_Info char,
+Foreign Key (Church_ID) References Human(Church_ID)
+						On Delete Set Null
+						On Update Cascade,
+Foreign Key (Home_Address) References House(Home_Address)
+						On Delete Set Null
+						On Update Cascade
+);
+
+
+
+Insert Or Replace Into Human Values
+(1, "Gregory McLaren","M", "1235-08-13", 1000, "Arrogant, prideful,wealthy"),
+(2, "Noah Smith", "M", "1236-09-05", 100, "Golden hands"),
+(3, "Peggy Williams", "F", "1238-02-01", 50, "Arrogant"),
+(4, "John Williams", "M", "1239-08-07", 46, "A chicken"),
+(5, "Oliver Robinson", "M", "1240-01-03", 25, "Noisy and loud"),
+(6, "Lucas Films", "M", "1241-04-23", 84, "Long ago in a distant future"),
+(7, "Emma Smith", "F", "1245-12-19", 89, "Gentle"),
+(8, "Sophia Johnson", "F", "1249-01-05", 64, "Loving"),
+(9, "James Miller", "M", "1253-03-18", 31, "A thief"),
+(10, "Benjamin Jones", "M", "1255-11-30", 42, "A boozer"),
+(11, "Amelia Jones","F", "1257-12-31", 78, "Cold-hearted"),
+(12, "Charlotte Robinson", "F", "1259-03-04", 47, "Fat"),
+(13, "Robert Davis", "M", "1261-07-31", 61, "Thin"),
+(14, "Isabella Garcia", "F", "1262-09-17", 82, "Whatcha doing?"),
+(15, "Susan McLaren", "F", "1263-03-28", 200, "Calm and quiet"),
+(16, "Marl Karx", "M", "1264-08-12", 0, "Long live, the creation of the people's will; Extremely poor"),
+(17, "Edricha Fngels-Karx", "F", "1267-05-11", 3, "A fool"),
+(18, "Jorge Jorge", "M", "1269-10-10", 18, "Naughty"),
+(19, "Fred Moore", "M", "1273-02-17", 27, "Buffed"),
+(20, "Zoe Thomas", "F", "1275-07-06", 65, "Sweetheart"),
+(21, "Lucy Stone", "F", "1278-10-09", 45, "Ugly"),
+(22, "Richard Lion", "M", "1280-11-30", 92, "Dirty hands"),
+(23, "Tomas Clark", "M", "1282-06-14", 76, "Young"),
+(24, "Leah Williams", "F", "1285-09-12", 18, "Beutiful"),
+(25, "Scott Smith","M", "1286-03-18", 15, "Dumb"),
+(26, "Pol McLaren", "M", "1286-07-30", 100, "Clever boy"),
+(27, "Robin Smith", "M", "1289-10-18", 7, "Silent"),
+(28,"Alfred Williams", "M", "1292-08-16", 3, "Noisy"),
+(29, "Meg McLaren", "F", "1293-10-27", 30, "Playful"),
+(30,"Bella Jones", "F", "1297-02-20", 0, "Sleepy");
+
+Insert Or Replace Into Child Values 
+(24, 3, 4, 1, "Must be at home before 19:00" ),
+(25, 2, 7, 1, "Working with a Dad"),
+(26, 1, 15, 1, "Loves to draw"),
+(27, 2, 7, 2, "Helps his Mom"),
+(28, 3, 4, 2, "Constantly crying"),
+(29, 1, 15, 2, "Loves her doll  Susan"),
+(30, 10, 11, 1, "A little baby");
+
+Insert Or Replace Into House Values
+("Castle", "Here lives the Lord with his Family"),
+("Wheat Street 1", Null),
+("Wheat Street 2", Null),
+("Wheat Street 3", Null),
+("Wheat Street 4", Null),
+("Wheat Street 5", Null),
+("Tomato Avenue 1", Null),
+("Tomato Avenue 2", Null),
+("Tomato Avenue 3", Null),
+("Crops Street  1", Null),
+("Crops Street 2", Null),
+("Crops Street 3", Null),
+("Crops Street 4", Null),
+("Based Street 1", Null),
+("Based Street 2", Null),
+("Coal Alley 1", Null),
+("Coal Alley 2", Null),
+("Cranberry Street 1", Null),
+("Cranberry Street 2", Null),
+("Cranberry Street 3", Null),
+("Sugar Street 1", Null);
+
+Insert Or Replace Into Villager Values
+(1, 2, "Tomato Avenue 1", Null),
+(2, 2, "Wheat Street 2", Null),
+(3, 3, "Wheat Street 3", Null),
+(4, 4, "Wheat Street 3", Null),
+(5, 5, "Sugar Street 1", Null),
+(6, 6, "Based Street 2", Null),
+(7, 7, "Tomato Avenue 1", Null),
+(8, 7, "Wheat Street 2", Null),
+(9, 8, "Cranberry Street 3", Null),
+(10, 9, "Coal Alley 1", Null),
+(11, 10, "Crops Street 4", Null),
+(12, 11, "Crops Street 4", Null),
+(13, 12, "Crops Street 2", Null),
+(14, 13, "Cranberry Street 2", Null),
+(15, 14, "Wheat Street 5", Null),
+(16, 16, "Based Street 1", Null),
+(17, 17, "Based Street 1", Null),
+(18, 18, "Coal Alley 2", Null),
+(19, 19, "Crops Street  1", Null),
+(20, 20, "Cranberry Street 1", Null),
+(21, 21, "Tomato Avenue 3", Null),
+(22, 22, "Wheat Street 4", Null),
+(23, 23, "Wheat Street 3", Null),
+(24, 24, "Tomato Avenue 1", Null),
+(25, 25, "Wheat Street 2", Null),
+(26, 27, "Tomato Avenue 1", Null),
+(27, 27, "Wheat Street 2", Null),
+(28, 28, "Crops Street 4", Null);
+
+Insert Or Replace Into Occupation Values
+("Smither", Null),
+("Vendor", Null),
+("Miller", Null),
+("Miner", Null),
+("Gardener", Null),
+("Guard", Null),
+("Skinner", Null),
+("Carpenter", Null),
+("Tailor", Null),
+("Unemployed", Null);
+
+Insert Or Replace Into Villagers_Occupation Values 
+(1, "Smither", 20, Null),
+(2, "Smither", 20, Null),
+(3, "Gardener", 15, Null),
+(4, "Miller", 25, Null),
+(5, "Guard", 12, Null),
+(6, "Vendor", 23, Null),
+(7, "Tailor", 20, Null),
+(7,"Gardener",15, Null),
+(8, "Tailor", 20, Null),
+(8,"Gardener",15, Null),
+(9, "Gardener", 10, Null),
+(10, "Miner", 8, Null),
+(11, "Skinner", 19, Null),
+(12, "Vendor", 11, Null),
+(13, "Unemployed", 10, Null),
+(14, "Carpenter", 8, Null),
+(15, "Tailor", 7, Null),
+(16, "Unemployed", 30, Null),
+(17,"Unemployed", 30, Null),
+(18,"Skinner", 10, Null),
+(19,"Guard", 10, Null),
+(20, "Gardener", 7, Null),
+(21, "Unemployed", 10, Null),
+(22, "Vendor", 5, Null),
+(23,"Skinner", 3, NUll);
+
+Insert Or Replace Into Working_Place Values
+("Tomato Avenue 4", "Smither", "Swords", NULL),
+("Coal Alley 2", "Miner", "Ores", NULL),
+("Cranberry Street 4", "Vendor", "Everything", NULL),
+("Wheat Street 6", "Miller", "Bread", NULL),
+("Crops Street 5", "Skinner", "Boots", NULL),
+("Castle's Garden", "Gardener", NULL, NULL),
+("Castle's Barracks", "Guard", NULL, NULL),
+("Sugar Street 2", "Carpenter", "Planks", NULL),
+("Sugar Street 3", "Tailor", "Dresses", NULL);
+
+Insert Or Replace Into Storage Values 
+("Iron ingot", "Tomato Avenue 4", 100, "Component"),
+("Iron Ore", "Coal Alley 2", 1000, "Component"),
+("Everything", "Cranberry Street 4", 100000000, "Component"),
+("Wheat", "Wheat Street 6", 150, "Component"),
+("Leather","Crops Street 5", 75, "Component" ),
+("Wood","Sugar Street 2", 25, "Component"),
+("Wool", "Sugar Street 3", 80, "Component");
+
+Insert Or Replace Into Villagers_Lord Values 
+(1, 1, "Castle", NULL),
+(2, 15,"Castle", NULL),
+(3, 26, "Castle", NULL),
+(4, 29, "Castle", NULL);
+
+Insert Or Replace Into Goods Values 
+("Sword", "Tomato Avenue 4", "Iron ingot", 3, "To Sell"),
+("Bread", "Wheat Street 6", "Wheat", 5, "To Sell"),
+("Boots", "Crops Street 5", "Leather", 6, "To Sell"),
+("Planls", "Sugar Street 2", "Wood", 4, "To Sell"),
+("Dresses", "Sugar Street 3", "Wool", 20, "To Sell"),
+("Iron ingot", "Coal Alley 2", "Iron Ore", 15, "To Sell");
+
+Insert Or Replace Into Purchase Values 
+(2, "Iron ingot", 3, 15, NULL),
+(4, "Boots", 1, 10, NULL),
+(1, "Dresses", 4, 80, NULL),
+(10,"Bread", 10, 40, NULL),
+(5, "Sword", 1, 25, NULL);

@@ -1,0 +1,73 @@
+--1) Вывод женщин, родившихся после 1250, упорядоченных по возрастанию капитала
+Select h.Church_ID, v.Lords_Book_ID , h.Name, h.Capital  From Human h
+Inner Join Villager v On  v.Church_ID = h.Church_ID 
+Where Sex = "F" And Birth_Day >= "1250-01-01"
+Order By Capital Desc; 
+
+--2, 4) Вывод мужчин, у которых более одного ребёнка
+--(Если не использовать Having, а добавить условие в where, то выдаёт ошибку)
+Select Count(h.Church_ID), h.Name From Human h
+Inner Join Child c On  c.Parent_Church_ID_1 = h.Church_ID  Or c.Parent_Church_ID__2 = h.Church_ID 
+Where Sex = "М"--And Count(h.Church_ID) > 1
+Group  By h.Church_ID
+Having Count(h.Church_ID) > 1;
+
+
+--3)Вывод случайного крестьянина
+Select h.Church_ID, v.Lords_Book_ID, h.Name, h.Sex,h.Birth_Day, v.Home_Address, vo.Villagers_Profession,vo.Experience,  h.Capital, h.Additional_Info  From Human h, Villagers_Occupation vo 
+Inner Join Villager v On  v.Church_ID = h.Church_ID 
+Where Birth_Day <= "1285-01-01"
+Order By Random()
+Limit 1; 
+
+--5) Вывод всех работающих крестьян
+Select h.Church_ID, v.Lords_Book_ID, h.Name, h.Sex,h.Birth_Day, vo.Villagers_Profession,vo.Experience From Human h
+Inner Join Villagers_Occupation vo, Villager v  On v.Lords_Book_ID = vo.Villagers_ID_In_Lords_Books And v.Church_ID = h.Church_ID 
+Group by h.Church_ID
+Except 
+Select h.Church_ID, v.Lords_Book_ID, h.Name, h.Sex,h.Birth_Day, vo.Villagers_Profession,vo.Experience From Human h
+Inner Join Villagers_Occupation vo, Villager v  On v.Lords_Book_ID = vo.Villagers_ID_In_Lords_Books And v.Church_ID = h.Church_ID 
+Where vo.Villagers_Profession  = "Unemployed";
+
+--6, 7, 8)Вывод всех товаров, для изготовления которых необходимы ресурсы, вместе с адресом изготовления и профессией жителя
+--(Если использовать Outer или Right Join, появится ошибка:"RIGHT and FULL OUTER JOINs are not currently supported", видимо в этой версии их нет)
+Select g.Working_Place_Address,s.Resources, g.Goods_Type, wp.Villagers_Profession  From Goods g , Working_Place wp  
+Left Outer Join Storage s  On s.Working_Place_Address = g.Working_Place_Address
+Where wp.Address  = s.Working_Place_Address  
+Group by s.Working_Place_Address;
+
+--9)Вывод всех жителей вместе с их домами
+--(Если у жителя больше одной прописки, то выведет все его дома)
+Select v.Lords_Book_ID , ho.Home_Address, h.Name  From Villager v , Human h 
+Cross Join House ho
+Where v.Home_Address  = ho.Home_Address And h.Church_ID = v.Church_ID 
+Order by v.Lords_Book_ID; 
+
+--10)Список всех возможных строений
+--(Улицы + постройки внутри замка, которые являются рабочими местами, но не являются домом с конкретной улицей)
+Select h.Home_Address, h.Additional_Info  From House h
+Union
+Select wp.Address, wp.Additional_Info  From Working_Place wp;
+
+--11)Вывод  всех товаров и их принодлежности
+--(Полноценный товар или как компонент для создания другого)
+Select s.Resources, s.Working_Place_Address, s.Additional_Info  From Storage s 
+Union All
+Select g.Goods_Type, g.Working_Place_Address, g.Additional_Info  From Goods g 
+Order by Additional_Info;
+
+--12)Вывод вещей, которые явялются и компонентом, и полноценным товаром
+Select s.Resources From Storage s 
+Intersect
+Select g.Goods_Type From Goods g; 
+
+--13)Представление из пенсионеров
+Create View If Not Exists Age As
+Select h.Church_ID, h.Name,v.Lords_Book_ID , h.Birth_Day,vo.Villagers_Profession, vo.Experience  From Human h, Villager v  
+Inner Join Villagers_Occupation vo On vo.Villagers_Profession !="Unemployed"And v.Church_ID = h.Church_ID  And vo.Villagers_ID_In_Lords_Books = v.Lords_Book_ID 
+Where h.Birth_Day <= Date("1240-01-01");
+
+Select a.Church_ID,a.Lords_Book_ID  ,a.Name, a.Birth_Day, a.Villagers_Profession, a.Experience From Age a
+Group by a.Church_ID;
+
+--Drop View Age;
